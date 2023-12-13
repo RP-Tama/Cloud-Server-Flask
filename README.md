@@ -7,7 +7,7 @@
 | Raditya Pratama | 5027211047 |
 | Vira Datry M | 5027211050 |
 | Wisnu Adjie Saka | 5027211051 | 
-| Adimas Defatra| 5027211040 | 
+| Adimasdefatra Bimasena | 5027211040 | 
 
 
 ## Permasalahan
