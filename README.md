@@ -39,7 +39,7 @@ Tabel Spesifikasi dan Harga:
 
 
 # Implementasi dan Konfigurasi
-## 1. Persiapan
+## 1. Persiapan Database
 Sebelum mulai praktik install MongoDB di Ubuntu, ada beberapa hal yang perlu Anda persiapkan, yaitu:
 
 - **Perangkat Ubuntu** – Siapkan komputer atau server VPS dengan sistem operasi Linux Ubuntu. Sebagai contoh, kami akan menggunakan layanan VPS dari Niagahoster.
@@ -89,4 +89,8 @@ Anda akan melihat output yang satu ini jika MongoDB sudah berjalan di Ubuntu:
 *MongoDB dalam keadaan aktif pada server Ubuntu8*
 
 Sampai di sini, Anda telah menyelesaikan tutorial install MongoDB Ubuntu.
+
+## 6. Persiapan Worker
+
+## 7. Persiapan Load Balancer
 
