@@ -1,4 +1,4 @@
-# Cloud-Server-Load-Test
+# Cloud-Server-Load-Test-Kelompok-3
 
 |       Nama      | NRP        | 
 | -----------     | :---------: 
@@ -91,6 +91,29 @@ Anda akan melihat output yang satu ini jika MongoDB sudah berjalan di Ubuntu:
 Sampai di sini, Anda telah menyelesaikan tutorial install MongoDB Ubuntu.
 
 ## 6. Persiapan Worker
+Setelah membuat droplet worker pada digital ocean berdasarkan topologi. Akses worker tersebut melalui terminal dengan cara:
+```bash
+ssh root@[IP Worker]
+```
+Berikut adalah contohnya ketika sudah berhasil mengakses VPS cloud:
 
-## 7. Persiapan Load Balancer
+![image](https://github.com/RP-Tama/Cloud-Server-Load-Test-Kelompok-3/assets/113072294/0f74decc-30e1-4823-8494-009788f4b412)
+
+## 7. Git Clone Repository FP TKA
+Setelah berhasil mengakses VPS Worker kita bisa meng git clone repository soal FP TKA untuk mendapatkan script python app.py soal dengan cara:
+```bash
+git clone https://github.com/fuaddary/fp-tka.git
+```
+Tetapi sebelum itu kita harus mengupdate repository ubuntu
+```bash
+sudo apt-get update && sudo apt-get upgrade
+```
+Setelah berhasil menginstal akan ada folder fp-tka
+
+![image](https://github.com/RP-Tama/Cloud-Server-Load-Test-Kelompok-3/assets/113072294/59132cae-b9e2-4b78-883f-9d3b62dd708d)
+
+## 8. Buat Virtual Environment
+Virtual Environment digunakan
+
+## 9. Persiapan Load Balancer
 
