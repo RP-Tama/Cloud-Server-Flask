@@ -16,14 +16,17 @@ Anda adalah seorang lulusan Teknologi Informasi, sebagai ahli IT, salah satu kem
 
 Pada suatu saat teman anda ingin mengajak anda memulai bisnis di bidang digital marketing, anda diberikan sebuah aplikasi berbasis API File: app.py dengan spesifikasi yang terdapat pada soal github.
 
-
 ## Rancangan Arsitektur Cloud
 
-Arsitektur Cloud
+Kami membuat 2 model arsitektur cloud yang kami buat dari  cloud provider Digital Ocean. Pertama menggunakan 2 worker dan 1 load balancer yang disambungkan ke database:
 ![image](https://github.com/Delsea12/Jarkom-Modul-4-IT13-2023/assets/113821220/559af413-82c5-4901-b8dd-f34749941e22)
 
-Tabel Spesifikasi dan Harga
+Tabel Spesifikasi dan Harga:
 ![image](https://github.com/Delsea12/Jarkom-Modul-4-IT13-2023/assets/113821220/2f534615-5678-4c40-99cd-ffbd00a14cf5)
+
+Kedua menggunakan 1 worker yang langsung disambungkan ke database
+
+
 
 
 
