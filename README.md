@@ -116,4 +116,38 @@ Setelah berhasil menginstal akan ada folder fp-tka
 Virtual Environment digunakan
 
 ## 9. Persiapan Load Balancer
+Sebelum memulai, kita melakukan install load balancer terlebih dahulu menggunakan perintah 
+
+`sudo apt-get install nginx`
+
+Lakukan konfigurasi Nginx Setelah instalasi selesai, buka dan edit file konfigurasi Nginx dengan menggunakan teks editor dengan perintah seperti dibawah ini
+
+`sudo nano /etc/nginx/nginx.conf`
+
+Jika sudah masuk pada edit file tambahkan konfigurasi berikut di dalam blok http
+
+```
+upstream mongodb_servers {
+    server <worker1_ip>:27017;
+    server <worker2_ip>:27017;
+    # Add more worker instances if needed
+}
+```
+Sekarang, buat konfigurasi untuk Load Balancer dengan membuat file baru di direktori dengan perinatah `sudo nano /etc/nginx/conf.d/mongodb_load_balancer.conf
+` lalu tambahkan konfigurasi sebagai berikut
+
+```
+server {
+    listen 80;
+    server_name mongodb-loadbalancer;
+
+    location / {
+        proxy_pass http://mongodb_servers;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
+Jika sudah lakukan uji konfigurasi nginx dengan perintah `sudo nginx -t`, jika berhasil dan tidak terjadi kesalahan selanjutnya melakukan restrat pada nginx `sudo systemctl restart nginx`
 
