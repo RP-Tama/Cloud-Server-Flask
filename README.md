@@ -113,9 +113,48 @@ Setelah berhasil menginstal akan ada folder fp-tka
 ![image](https://github.com/RP-Tama/Cloud-Server-Load-Test-Kelompok-3/assets/113072294/59132cae-b9e2-4b78-883f-9d3b62dd708d)
 
 ## 8. Buat Virtual Environment
-Virtual Environment digunakan
+Virtual Environment digunakan untuk membuat lingkungan yang terisolasi di dalam proyek Anda dan menginstal paket yang dibutuhkan tanpa mempengaruhi instalasi global di sistem operasi Anda. Ini membantu mencegah konflik antara versi pustaka dan memudahkan manajemen dependensi proyek. Untuk menginstalnya pertama instal python:
+```bash
+sudo apt-get install python3
+sudo apt-get install python3-pip
+sudo apt-get install python3-venv
+```
+Setelah menginstal python kita bisa membuat venv di dalam folder fp-tka
+```bash
+cd fp-tka
+python3 -m venv venv
+```
+Setelah itu kita bisa mengaktifkan virtual environment dengan menjalankan command:
+```bash
+source venv/bin/activate
+```
+Setelah aktif kita bisa menggunakan pip.
 
-## 9. Persiapan Load Balancer
+## 9. Menginstal Dependensi
+Setelah masuk di virtual environment kita perlu menginstal dependensi yang dibutuhkan. Berikut dependensinya:
+```bash
+pip install flask
+pip install gunicorn
+pip install flask_pymongo
+pip install gevent
+```
+
+## 10. Memasukkan database ke app.py
+buka app.py dan ganti MONGO_URI nya menjadi IP dari Database
+```bash
+# Configuration for MongoDB
+app.config['MONGO_URI'] = 'mongodb://178.128.61.6:27017/orders_db'
+mongo = PyMongo(app)
+```
+
+## 11. Menajalankan Worker
+Didalam virtual environment masukan command berikut untuk menjalankan gunicorn:
+```bash
+gunicorn --bind 0.0.0.0:80 -w 8 -k gevent app:app
+```
+worker berjalan pada port 80
+
+## 12. Persiapan Load Balancer
 Sebelum memulai, kita melakukan install load balancer terlebih dahulu menggunakan perintah 
 
 `sudo apt-get install nginx`
