@@ -1,4 +1,4 @@
-# Cloud-Server-Flask
+# Cloud-Server-Load-Test
 
 |       Nama      | NRP        | 
 | -----------     | :---------: 
