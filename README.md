@@ -18,15 +18,23 @@ Pada suatu saat teman anda ingin mengajak anda memulai bisnis di bidang digital 
 
 ## Rancangan Arsitektur Cloud
 
-Kami membuat 2 model arsitektur cloud yang kami buat dari  cloud provider Digital Ocean. Pertama menggunakan 2 worker dan 1 load balancer yang disambungkan ke database:
+###Kami membuat 2 model arsitektur cloud yang kami buat dari  cloud provider Digital Ocean.###
+
+Pertama menggunakan 2 worker dan 1 load balancer yang dihubungkan ke database:
+
 ![image](https://github.com/Delsea12/Jarkom-Modul-4-IT13-2023/assets/113821220/559af413-82c5-4901-b8dd-f34749941e22)
 
 Tabel Spesifikasi dan Harga:
+
 ![image](https://github.com/Delsea12/Jarkom-Modul-4-IT13-2023/assets/113821220/2f534615-5678-4c40-99cd-ffbd00a14cf5)
 
-Kedua menggunakan 1 worker yang langsung disambungkan ke database
+Kedua menggunakan 1 worker yang langsung dihubungkan ke database:
 
+![image](https://github.com/RP-Tama/Cloud-Server-Load-Test-Kelompok-3/assets/113072294/9ebf370f-99a2-4cfb-821f-1f93187fdf47)
 
+Tabel Spesifikasi dan Harga:
+
+![image](https://github.com/RP-Tama/Cloud-Server-Load-Test-Kelompok-3/assets/113072294/ab6cd410-9b17-4f21-baf9-93df8a435df1)
 
 
 
