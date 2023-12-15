@@ -166,27 +166,177 @@ Lakukan konfigurasi Nginx Setelah instalasi selesai, buka dan edit file konfigur
 Jika sudah masuk pada edit file tambahkan konfigurasi berikut di dalam blok http
 
 ```
-upstream mongodb_servers {
-    server <worker1_ip>:27017;
-    server <worker2_ip>:27017;
-    # Add more worker instances if needed
+upstream backend {
+        server 139.59.248.121;
+        server 68.183.181.9;
+    }
+```
+dan untuk setingan fullnya ada disini
+
+```
+worker_processes auto;
+worker_rlimit_nofile 10000000;
+
+error_log /var/log/nginx/error.log crit;
+
+events {
+    worker_connections 4000;
+    use epoll;
+    multi_accept on;
 }
-```
-Sekarang, buat konfigurasi untuk Load Balancer dengan membuat file baru di direktori dengan perinatah `sudo nano /etc/nginx/conf.d/mongodb_load_balancer.conf
-` lalu tambahkan konfigurasi sebagai berikut
 
-```
-server {
-    listen 80;
-    server_name mongodb-loadbalancer;
+http {
 
-    location / {
-        proxy_pass http://mongodb_servers;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
+    upstream backend {
+        server 139.59.248.121;
+        server 68.183.181.9;
+    }
+    open_file_cache max=200000 inactive=20s;
+    open_file_cache_valid 30s;
+    open_file_cache_min_uses 2;
+    open_file_cache_errors on;
+
+    access_log off;
+
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+
+    gzip on;
+    gzip_min_length 10240;
+    gzip_comp_level 1;
+    gzip_vary on;
+    gzip_disable msie6;
+    gzip_proxied expired no-cache no-store private auth;
+    gzip_types
+        text/css
+        text/javascript
+        text/xml
+        text/plain
+        text/x-component
+        application/javascript
+        application/x-javascript
+        application/json
+        application/xml
+        application/rss+xml
+        application/atom+xml
+        font/truetype
+        font/opentype
+        application/vnd.ms-fontobject
+        image/svg+xml;
+
+    reset_timedout_connection on;
+    client_body_timeout 10;
+    send_timeout 2;
+    keepalive_timeout 30;
+    keepalive_requests 100000;
+
+    # Konfigurasi Cache
+
+
+    # Konfigurasi Cache
+    proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=my_cache:10m max_size=10g inactive=60m use_temp_path=off;
+
+    # Reverse Proxy Configuration
+    server {
+        listen 80 backlog=16384;
+        server_name localhost; # Atau domain Anda
+
+        location / {
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header Host $http_host;
+            # we don't want nginx trying to do something clever with
+            # redirects, we set the Host: header above already.
+            proxy_redirect off;
+            proxy_pass http://backend;
+
+            # Setelan Cache
+            proxy_cache my_cache;
+            proxy_cache_valid 200 60m;
+            proxy_cache_valid 404 1m;
+        }
     }
 }
+
+
+
+
+
 ```
 
 Jika sudah lakukan uji konfigurasi nginx dengan perintah `sudo nginx -t`, jika berhasil dan tidak terjadi kesalahan selanjutnya melakukan restrat pada nginx `sudo systemctl restart nginx`
+## 13. Testing EndPoint
+* Get /orders
+![image](https://github.com/RP-Tama/Cloud-Server-Load-Test-Kelompok-3/assets/88955368/f9ff4678-d6a8-4b25-8592-ef7166d0e150)
 
+* Get /orders/<string:order_id>
+![image](https://github.com/RP-Tama/Cloud-Server-Load-Test-Kelompok-3/assets/88955368/005d7254-dfe9-44b4-abff-278a8af592bd)
+
+* Post /orders
+![image](https://github.com/RP-Tama/Cloud-Server-Load-Test-Kelompok-3/assets/88955368/2e6e8bd0-faf8-4eb7-a3a5-fdd18823c16e)
+
+
+* Put /orders/<string:order_id>
+![image](https://github.com/RP-Tama/Cloud-Server-Load-Test-Kelompok-3/assets/88955368/2e6e8bd0-faf8-4eb7-a3a5-fdd18823c16e)
+
+* Delete /orders/<string:order_id>
+![image](https://github.com/RP-Tama/Cloud-Server-Load-Test-Kelompok-3/assets/88955368/e38055ea-2e12-474e-89a1-d56749f01dce)
+
+## 14. Hasil Load testing
+| Spawn Rate | Arsitektur 1 User | Arsitektur 1 RPS | Arsitektur 2 User | Arsitektur 2 RPS |
+|------------|-------------------|------------------|-------------------|------------------|
+| 25         | 825               | 259              | 1425              | 534              |
+| 50         | 900               | 234              | 2850              | 1106             |
+| 100        | 1200              | 202              | 3900              | 1145             |
+
+Tetapi kami menemukan ke anehan pada saat kami run di pagi hari (jam sibuk)
+| Spawn Rate | Arsitektur 2 User | Arsitektur 2 RPS |
+|------------|-------------------|------------------|
+| 25         | 1500               | 429             |
+| 50         | 1250              | 109              |
+| 100        | 2300              | 494              |
+
+
+## 15. Kesimpulan yang kami dapatkan saat mengerjakan fp ini
+* Kami menemukan hal yang paling berpengaruh pada peningkatan RPS ini adalah CPU. Hal ini saat kami melakukan pemantauan bahwa saat melakukan request tanpa cache CPU meningkat drastis bahkan sampai 100%
+![Screenshot (622)](https://github.com/RP-Tama/Cloud-Server-Load-Test-Kelompok-3/assets/88955368/07bac12c-1609-4110-84c5-49f61e65d412)
+
+dah pada server mongo nya ternyata tidak sampai 100% 
+
+* Error fail pada Arsitektur 1 dan 2 juga berbeda, pada arsitektur 1 fail nya gara gara terkada kita tidak bisa menemukan endpoint /orders aneh nya kedua worker dalam kondisi sehat error nya `HTTPError('500 Server Error: Internal Server Error for url: /orders')` sedang pada arsitektur 2 errornya connection timeout yang mana berarti seiring meningkatnya user maka respon time dari server juga semakin lama hingga terjadi timeout
+* RPS meningkat drastis dan CPU berkurang drastis saat kita mengaplikasi cache, yang mana ini sangat berpengaruh bahkan 3x lipat dari sebelumnya
+* Penggunaan NGINX juga Berpengaruh dari pada langsung serving dari gunicorn langsung ke internet lebih baik diarahkan ke NGINX dulu
+* Penggunaan woker asnchronus, karena command running kami `gunicorn app:app --workers=9 --worker-class=eventlet --bind=0.0.0.0:8000` yang mana eventlet adalah library concurrent networking untuk Python yang menggunakan coroutines (atau green threads) untuk mencapai efisiensi tinggi dalam menjalankan operasi I/O secara asynchronous. Mungkin kelompok lain banyak yg pakai gevent itu karena awalnya mungkin kelompok kami juga yg memakainya tapi ternyata dari segi performa lebih baik eventlet
+* Setingan NGINX yang optimal juga sangat berpengaruh
+* Koneksi internet dari host locust juga mempengaruhi keberhasilan
+* Karena concurent itu adalah CPU-bound jadi semakin banyak core CPU maka semakin banyak pula request yang bisa handle oleh server
+
+## 16. Percobaan yang mungkin bisa di lakukan di kedepannya untuk meng optimalkan server
+* menggunanakan 7 worker dengan 1CPU dan 512MB ram
+* membuat get /orders menjadi pagination agar saat document sudah sangat banyak server tidak mengirimkan data yang begitu besar
+* mengganti Flask menjadi FastAPI: Berikur penjelasan dari ChatGPT kenapa fast api lebih unggul Salah satu perbedaan utama antara Flask dan FastAPI adalah dukungan untuk asynchronous programming. FastAPI dibangun di atas Starlette dan Pydantic, yang mendukung asynchronous request handling. Ini berarti FastAPI dapat menangani banyak request secara simultan dan efisien, terutama dalam situasi dengan banyak operasi I/O, seperti permintaan ke database atau layanan eksternal. Sementara itu, Flask didesain untuk synchronous programming, yang cenderung lebih lambat dalam menangani banyak request secara simultan.
+* Pengunaan load balancer yang lebih complex
+
+
+## 17. Kendala yang kami hadapi
+* mongo db ter hack, kemungkinan karena terkena botnet karena portnya terbukan dan tidak diberi password
+* susah mendaftar free trial azure/digital ocean
+
+# Referensi untuk membuat script yg kami gunakan
+* nginx.conf
+Sumber: https://gist.github.com/denji/8359866
+
+* TCP Tweak
+sumber: https://github.com/iahmad-khan/system-admin/blob/master/linux-tcp-tweaks
+
+* Gunicorn conf
+Sumber: https://medium.com/building-the-system/gunicorn-3-means-of-concurrency-efbb547674b7
+https://stackoverflow.com/questions/71893002/how-to-make-flask-handle-25k-request-per-second-like-express-js
+
+* Cache
+Sumber: https://tonyteaches.tech/nginx-server-cache/
+
+
+
+```
